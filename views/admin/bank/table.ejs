@@ -1,0 +1,50 @@
+<!-- DataTales Example -->
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#add-modal">
+            <i class="fas fa-plus"></i>
+        </button>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                <thead>
+                    <tr>
+                        <th>No</th>
+                        <th>Name Bank</th>
+                        <th>Nomor Rekening</th>
+                        <th>Name</th>
+                        <th>Image</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% let i = 1; %>
+                    <% banks.forEach((bank,index) => { %>
+                    <tr>
+                        <td><%= i %></td>
+                        <td><%= bank.nameBank %></td>
+                        <td><%= bank.nomorRekening %></td>
+                        <td><%= bank.name %></td>
+                        <td>
+                            <img src="/<%= bank.imageUrl %>" alt="" width="50" height="50">
+                        </td>
+                        <td>
+                            <form action="/admin/bank/<%= bank._id %>?_method=DELETE" method="POST">
+                                <a href="javascript:void(0);" type="button"
+                                    class="btn btn-warning btn-circle btn-sm button-update" data-id="<%= bank._id %>"
+                                    data-name="<%= bank.name %>" data-namebank="<%= bank.nameBank %>"
+                                    data-nomorrekening="<%= bank.nomorRekening %>"><i class=" fas fa-edit"></i></a>
+                                <button onclick="return confirm('Are You Sure ?');"
+                                    class="btn btn-danger btn-circle btn-sm"><i class="fas fa-trash"></i></button>
+                            </form>
+                        </td>
+                    </tr>
+                    <% i++ %>
+                    <% })%>
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
