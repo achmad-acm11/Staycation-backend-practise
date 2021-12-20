@@ -440,7 +440,7 @@ const data = {
       memberId: mongoose.Types.ObjectId("5e96cbe292b97300fc903333"),
       bankId: mongoose.Types.ObjectId("5e96cbe292b97300fc903323"),
       payments: {
-        proofPayment: "img/upload/bukti.jpg",
+        proofPayment: "img/upload/buktibayar.jpeg",
         bankFrom: "BCA",
         status: "Proses",
         accountHolder: "ang",

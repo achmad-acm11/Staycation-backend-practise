@@ -1,39 +1,43 @@
 <!-- DataTales Example -->
 <div class="card shadow mb-4">
-    <div class="card-header py-3">
-      <h6 class="m-0 font-weight-bold text-primary">DataTables Example</h6>
-    </div>
-    <div class="card-body">
-      <div class="table-responsive">
-        <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
-          <thead>
-            <tr>
-              <th>No</th>
-              <th>Invoice</th>
-              <th>Date</th>
-              <th>Title</th>
-              <th>Name Member</th>
-              <th>Status</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>1</td>
-              <td>#1234</td>
-              <td>2021-12-01 s/d
-                2021-12-11
-              </td>
-              <td>Title</td>
-              <td>Budi Jaja</td>
-              <td>proses</td>
-              <td>
-                <a href="javascript:void(0)" class="btn btn-success btn-circle btn-sm button-update"><i
-                    class=" fas fa-eye"></i></a>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+  <div class="card-header py-3">
+    <h6 class="m-0 font-weight-bold text-primary">DataTables Example</h6>
+  </div>
+  <div class="card-body">
+    <div class="table-responsive">
+      <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+        <thead>
+          <tr>
+            <th>No</th>
+            <th>Invoice</th>
+            <th>Date</th>
+            <th>Title</th>
+            <th>Name Member</th>
+            <th>Status</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% bookings.forEach((booking,index) => { %>
+          <tr>
+            <td><%= index+1 %></td>
+            <td>#<%= booking.invoice %></td>
+            <td><%= booking.bookingStartDate
+              .toLocaleString().split(',')[0] %> s/d
+              <%= booking.bookingStartDate
+              .toLocaleString().split(',')[0] %>
+            </td>
+            <td><%= booking.itemId.title %></td>
+            <td><%= booking.memberId.firstName %></td>
+            <td><%= booking.payments.status %></td>
+            <td>
+              <a href="/admin/booking/<%= booking._id %>" class="btn btn-success btn-circle btn-sm button-update"><i
+                  class=" fas fa-eye"></i></a>
+            </td>
+          </tr>
+          <% }) %>
+        </tbody>
+      </table>
     </div>
   </div>
+</div>

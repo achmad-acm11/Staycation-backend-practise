@@ -8,6 +8,8 @@ const Feature = require("../models/Feature");
 const Activity = require("../models/Activity");
 const User = require("../models/User");
 const bcrypt = require("bcryptjs");
+const Member = require("../models/Member");
+const Booking = require("../models/Booking");
 
 module.exports = {
   viewSignin: async (req, res) => {
@@ -60,7 +62,19 @@ module.exports = {
     res.redirect("/admin/signin");
   },
   viewDashboard: async (req, res) => {
-    res.render("admin/dashboard/index", { title: "Admin - Dashboard" });
+    const members = await Member.find();
+    const bookings = await Booking.find();
+    const items = await Item.find();
+
+    res.render("admin/dashboard/index", {
+      data: {
+        members,
+        bookings,
+        items,
+      },
+      user: req.session.user,
+      title: "Admin - Dashboard",
+    });
   },
 
   // START Category Endpoint
@@ -70,6 +84,7 @@ module.exports = {
       const alertMessage = req.flash("alertMessage");
       const alertStatus = req.flash("alertStatus");
       res.render("admin/category/index", {
+        user: req.session.user,
         categories,
         alert: { message: alertMessage, status: alertStatus },
         title: "Admin - Category",
@@ -136,6 +151,7 @@ module.exports = {
       const alertStatus = req.flash("alertStatus");
 
       res.render("admin/bank/index", {
+        user: req.session.user,
         banks,
         alert: { message: alertMessage, status: alertStatus },
         title: "Admin - Bank",
@@ -222,6 +238,7 @@ module.exports = {
       const alertStatus = req.flash("alertStatus");
 
       res.render("admin/item/index", {
+        user: req.session.user,
         items,
         categories,
         action: "view",
@@ -281,6 +298,7 @@ module.exports = {
       const alertStatus = req.flash("alertStatus");
 
       res.render("admin/item/index", {
+        user: req.session.user,
         item,
         categories,
         action: "edit",
@@ -368,6 +386,7 @@ module.exports = {
       const alertMessage = req.flash("alertMessage");
       const alertStatus = req.flash("alertStatus");
       res.render("admin/item/index", {
+        user: req.session.user,
         alert: {
           message: alertMessage,
           status: alertStatus,
@@ -391,6 +410,7 @@ module.exports = {
       const alertStatus = req.flash("alertStatus");
 
       res.render("admin/item/detail_item/index", {
+        user: req.session.user,
         alert: {
           message: alertMessage,
           status: alertStatus,
@@ -556,7 +576,85 @@ module.exports = {
     }
   },
   // END Activity Endpoint
+
+  // START Booking Endpoint
   viewBooking: async (req, res) => {
-    res.render("admin/booking/index", { title: "Admin - Booking" });
+    try {
+      const alertMessage = req.flash("alertMessage");
+      const alertStatus = req.flash("alertStatus");
+
+      const bookings = await Booking.find()
+        .populate("itemId", "_id title")
+        .populate("memberId", "_id firstName");
+
+      res.render("admin/booking/index", {
+        alert: {
+          message: alertMessage,
+          status: alertStatus,
+        },
+        bookings,
+        user: req.session.user,
+        title: "Admin - Booking",
+      });
+    } catch (error) {
+      res.redirect("/admin/booking");
+    }
   },
+  showDetailBooking: async (req, res) => {
+    try {
+      const { id } = req.params;
+      const alertMessage = req.flash("alertMessage");
+      const alertStatus = req.flash("alertStatus");
+
+      const booking = await Booking.findOne({ _id: id })
+        .populate("memberId")
+        .populate("bankId");
+
+      res.render("admin/booking/show_detail_booking", {
+        title: "Admin - Booking Detail",
+        alert: {
+          message: alertMessage,
+          status: alertStatus,
+        },
+        booking,
+        user: req.session.user,
+      });
+    } catch (error) {
+      req.flash("alertMessage", `${error.message}`);
+      req.flash("alertStatus", "danger");
+      res.redirect("/admin/booking");
+    }
+  },
+
+  actionConfirmation: async (req, res) => {
+    const { id } = req.params;
+    try {
+      const booking = await Booking.findById(id).exec();
+      booking.payments.status = "Accept";
+      await booking.save();
+      req.flash("alertMessage", "Success Accept Booking");
+      req.flash("alertStatus", "success");
+      res.redirect(`/admin/booking/${id}`);
+    } catch (error) {
+      req.flash("alertMessage", `${error.message}`);
+      req.flash("alertStatus", "danger");
+      res.redirect(`/admin/booking/${id}`);
+    }
+  },
+  actionReject: async (req, res) => {
+    const { id } = req.params;
+    try {
+      const booking = await Booking.findById(id).exec();
+      booking.payments.status = "Reject";
+      await booking.save();
+      req.flash("alertMessage", "Success Reject Booking");
+      req.flash("alertStatus", "success");
+      res.redirect(`/admin/booking/${id}`);
+    } catch (error) {
+      req.flash("alertMessage", `${error.message}`);
+      req.flash("alertStatus", "danger");
+      res.redirect(`/admin/booking/${id}`);
+    }
+  },
+  // END Booking Endpoint
 };
