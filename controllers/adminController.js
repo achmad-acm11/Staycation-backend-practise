@@ -6,8 +6,59 @@ const Item = require("../models/Item");
 const Image = require("../models/Image");
 const Feature = require("../models/Feature");
 const Activity = require("../models/Activity");
+const User = require("../models/User");
+const bcrypt = require("bcryptjs");
 
 module.exports = {
+  viewSignin: async (req, res) => {
+    try {
+      const alertMessage = req.flash("alertMessage");
+      const alertStatus = req.flash("alertStatus");
+      if (req.session.user == null || req.session.user == undefined) {
+        res.render("index", {
+          alert: { message: alertMessage, status: alertStatus },
+          title: "Admin - Login",
+        });
+      } else {
+        res.redirect("/admin/dashboard");
+      }
+    } catch (error) {
+      res.redirect("/admin/signin");
+    }
+  },
+  actionSignin: async (req, res) => {
+    try {
+      const { username, password } = req.body;
+      const user = await User.findOne({ username: username });
+
+      if (!user) {
+        req.flash("alertMessage", "Username / Password is Wrong");
+        req.flash("alertStatus", "danger");
+        res.redirect("/admin/signin");
+      } else {
+        await bcrypt
+          .compare(password, user.password)
+          .then((res) => {
+            req.session.user = {
+              id: user._id,
+              username: user.username,
+            };
+            res.redirect("/admin/dashboard");
+          })
+          .catch((err) => {
+            req.flash("alertMessage", "Username / Password is Wrong");
+            req.flash("alsertStatus", "danger");
+            res.redirect("/admin/signin");
+          });
+      }
+    } catch (error) {
+      res.redirect("/admin/signin");
+    }
+  },
+  actionLogout: async (req, res) => {
+    req.session.destroy();
+    res.redirect("/admin/signin");
+  },
   viewDashboard: async (req, res) => {
     res.render("admin/dashboard/index", { title: "Admin - Dashboard" });
   },

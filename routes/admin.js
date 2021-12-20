@@ -1,10 +1,13 @@
 const express = require("express");
 const router = express.Router();
-// const multer = require("multer");
-// const upload = multer({dest: "./public/img/upload"});
 const { uploadSingle, uploadMultiple } = require("../middlewares/multer");
 const adminController = require("../controllers/adminController");
+const auth = require("../middlewares/auth");
 
+router.get("/signin", adminController.viewSignin);
+router.post("/signin", adminController.actionSignin);
+// router.use(auth);
+router.get("/logout",adminController.actionLogout)
 router.get("/dashboard", adminController.viewDashboard);
 
 // START Category Router
