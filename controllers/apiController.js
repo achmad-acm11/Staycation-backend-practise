@@ -41,9 +41,9 @@ module.exports = {
       };
       res.status(200).json({
         hero: {
-          trevelers: bookings.length,
-          treasure: activities.length,
-          city: items.length,
+          travelers: bookings.length,
+          treasures: activities.length,
+          cities: items.length,
         },
         mostPicked,
         category,
