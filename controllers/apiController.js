@@ -128,7 +128,7 @@ module.exports = {
       let total = item.price * duration;
       let tax = total * 0.1;
 
-      const invoice = Math.floor(1000000 + Math.random * 9000000);
+      const invoice = Math.floor(1000000 + Math.random() * 9000000);
 
       const member = await Member.create({
         firstName,
